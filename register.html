@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Register - Group 27 Savings Web App</title>
+
+    <!-- Firebase SDK setup (same as in index.html) -->
+    <script defer src="/__/firebase/10.14.1/firebase-app-compat.js"></script>
+    <script defer src="/__/firebase/10.14.1/firebase-auth-compat.js"></script>
+    <script defer src="/__/firebase/10.14.1/firebase-database-compat.js"></script>
+    <script defer src="/__/firebase/10.14.1/firebase-firestore-compat.js"></script>
+    <script defer src="/__/firebase/init.js?useEmulator=true"></script>
+
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #app-container { max-width: 800px; margin: 100px auto; padding: 32px; background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+      h1, h2 { color: #333; }
+      p { line-height: 1.6; }
+      .input-field { margin: 10px 0; }
+    </style>
+  </head>
+  <body>
+    <div id="app-container">
+      <h1>Register - Group 27 Savings Web App</h1>
+      <p>Please register to get started with our finance app!</p>
+
+      <!-- User Registration Form -->
+      <h2>Register</h2>
+      <form id="registration-form">
+        <div class="input-field">
+          <label for="email">Email:</label>
+          <input type="email" id="email" required>
+        </div>
+        <div class="input-field">
+          <label for="password">Password:</label>
+          <input type="password" id="password" required>
+        </div>
+        <div class="input-field">
+          <label for="firstname">First Name:</label>
+          <input type="text" id="firstname" required>
+        </div>
+        <div class="input-field">
+          <label for="surname">Surname:</label>
+          <input type="text" id="surname" required>
+        </div>
+        <div class="input-field">
+          <label for="security-question">Security Question:</label>
+          <input type="text" id="security-question" required>
+        </div>
+        <button type="submit">Register</button>
+      </form>
+
+      <p id="message"></p>
+    </div>
+
+    <script>
+      // Firebase JavaScript code to handle user registration
+      document.getElementById('registration-form').addEventListener('submit', function (e) {
+        e.preventDefault(); // Prevent the form from submitting the default way
+
+        // Collect form input values
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
+        const firstname = document.getElementById('firstname').value;
+        const surname = document.getElementById('surname').value;
+        const securityQuestion = document.getElementById('security-question').value;
+
+        // Firebase Authentication code
+        firebase.auth().createUserWithEmailAndPassword(email, password)
+          .then((userCredential) => {
+            const userId = userCredential.user.uid;
+            const database = firebase.firestore();
+
+            // Save additional user details in Firestore database
+            return database.collection('users').doc(userId).set({
+              email: email,
+              firstname: firstname,
+              surname: surname,
+              securityQuestion: securityQuestion,
+              userId: userId
+            });
+          })
+          .then(() => {
+            document.getElementById('message').textContent = 'Registration successful!';
+          })
+          .catch((error) => {
+            document.getElementById('message').textContent = 'Error: ' + error.message;
+          });
+      });
+    </script>
+    <script type="module" src="firebase-config.js"></script>
+  </body>
+</html>
